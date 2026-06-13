@@ -1,11 +1,11 @@
-# DOCUMENT IDENTIFIER:  doc
-### PORTFOLIO MODULE: HIGH-PERFORMANCE DATA LAKEHOUSE CALCULATIONS
+# Figure 3.0: High-Throughput Normalized Entity-Relationship Diagram & SQL Optimization Engine
+**Portfolio Module: High-Performance Data Lakehouse Calculations**
+**Architecture Archetype: Kappa Streaming Engine**
 
 ---
 
-## SECTION 1: AVERAGE DAILY CONSUMPTION PER METER
--- This query calculates the arithmetic mean consumption of electricity grouped 
--- by individual smart meter devices to establish core household baselines.
+## Section 1: Average Daily Consumption Per Meter
+This query calculates the arithmetic mean consumption of electricity grouped by individual smart meter devices to establish core household baselines.
 
 ```sql
 SELECT 
@@ -21,9 +21,8 @@ ORDER BY
 
 ---
 
-## SECTION 2: STANDARD DEVIATION OF USAGE PER METER
--- This query measures consumption variance per device, which serves as the 
--- underlying statistical calculation used to trigger real-time theft alerts.
+## Section 2: Standard Deviation of Usage Per Meter
+This query measures consumption variance per device, which serves as the underlying statistical calculation used to trigger real-time theft alerts and field technician dispatches.
 
 ```sql
 SELECT 
@@ -40,9 +39,8 @@ HAVING
 
 ---
 
-## SECTION 3: POINT-IN-TIME TEMPORAL JOIN (HISTORICAL PRICING CHANGES)
--- This script satisfies the core requirement to map daily consumption to its 
--- exact point-in-time timeline pricing contract row using effective date windows.
+## Section 3: Point-in-Time Temporal Join (Historical Pricing Changes)
+This script satisfies the core requirement to map daily consumption to its exact point-in-time timeline pricing contract row using slowly changing dimension effective date windows.
 
 ```sql
 SELECT 
@@ -66,9 +64,8 @@ WHERE
 
 ---
 
-## SECTION 4: LATE-DATA ARRIVAL TRACKING & INCORRECTLY BILLED INVOICES
--- This advanced query flags records where late device transmissions bypassed 
--- active contract windows, resulting in an automated delta calculation error.
+## Section 4: Late-Data Arrival Tracking & Incorrectly Billed Invoices
+This advanced query flags records where late device transmissions bypassed active contract windows, resulting in an automated delta calculation error flagged for reconciliation.
 
 ```sql
 SELECT 
