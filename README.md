@@ -1,7 +1,13 @@
+# Figure 1.0: Enterprise Grid Telemetry & Dynamic Tariff Integration Engine
+**Candidate Portfolio:** Charity Ndlovu |Lead Systems Analyst Technical Assessment Submission  
+**Architecture Archetype:** Event-Driven Kappa Streaming Architecture  
+
+---
+
 ## 💎 Executive Architecture Summary
 This repository contains the complete production-grade system blueprint, data models, and analytical queries designed to handle grid-scale smart meter telemetry ingestion and automated dynamic tariff calculation. 
 
-To eliminate the system crashes and data loss common in legacy systems, this architecture decouples the high-concurrency ingestion edge from active database lookup locks using a **Kappa Architecture** design pattern [aws_kinesis_data_streams_arch]. All processing, data validation, real-time alert baseline evaluations, and point-in-time financial re-billing tasks run through a single, unified immutable data stream ledger, ensuring absolute temporal data integrity.
+To eliminate the system crashes and data loss common in legacy platforms, this architecture decouples the high-concurrency ingestion edge from active database lookup locks using a **Kappa Architecture** design pattern [aws_kinesis_data_streams_arch]. All processing, data validation, real-time alert baseline evaluations, and point-in-time financial re-billing tasks run through a single, unified immutable data stream ledger, ensuring absolute temporal data integrity.
 
 ---
 
@@ -10,7 +16,7 @@ To eliminate the system crashes and data loss common in legacy systems, this arc
 ### 🖼️ /models (System Blueprint Graphic Artifacts)
 *   **`SystemsDesign.png` (Figure 1.0):** The macro enterprise architecture map displaying the asynchronous ingestion path through Amazon Kinesis, real-time AWS Lambda anomaly evaluation loops, and the isolated Databricks Medallion data lake zones [aws_kinesis_data_streams_arch]. It highlights the automated Gold Zone lookup loop triggered during `>350%` usage spikes.
 *   **`UseCase.png` (Figure 2.0):** The micro-logic software boundary specification model utilizing strict UML oval elements. Maps automated system `<<include>>` pipelines and conditional `<<extend>>` exception workflows (e.g., automated workforce dispatch hooks).
-*   **`ERD.png` (Figure 3.0):** The 3NF normalized physical database schema. Outlines exact columns, data constraints, foreign key mappings, and high-performance time-series partitioning on the `readings.reading_date` field.
+*   **`ERD.png` (Figure 3.0):** The 3Third Normal Form normalized physical database schema. Outlines exact columns, data constraints, foreign key mappings, and high-performance time-series partitioning on the `readings.reading_date` field.
 *   **`ActivityStateDiagram.png` (Figure 4.0):** A unified process workflow tracking how business calculation tasks trigger state-level changes on data rows (`UNPROCESSED` ➔ `BILLED` ➔ `RECONCILIATION`) when addressing late-data arrival lags.
 
 ### 📝 Core System Documentation Files
@@ -25,3 +31,4 @@ To eliminate the system crashes and data loss common in legacy systems, this arc
 1.  **Late-Data Alignment Engine:** Implements structural telemetry timestamps rather than ingestion clock stamps, eliminating calculation discrepancies caused by network latency dropouts.
 2.  **Streaming Shock Absorber:** Leverages decoupled ingestion message streams to process heavy concurrent machine workloads cleanly [aws_kinesis_data_streams_arch].
 3.  **Soft-Delete Configuration Invariance:** Enforces an append-only configuration layer with explicit date validity boundaries (`effective_start` / `effective_end`), protecting historical reporting files from schema truncation crashes.
+:** Enforces an append-only configuration layer with explicit date validity boundaries (`effective_start` / `effective_end`), protecting historical reporting files from schema truncation crashes.
