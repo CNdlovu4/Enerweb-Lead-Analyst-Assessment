@@ -1,5 +1,5 @@
 # Figure 1.0: Enterprise Grid Telemetry & Dynamic Tariff Integration Engine
-**Candidate Portfolio:** Charity Ndlovu |Lead Systems Analyst Technical Assessment Submission  
+**Candidate:** Charity Ndlovu |Lead Systems Analyst Technical Assessment Submission  
 **Architecture Archetype:** Event-Driven Kappa Streaming Architecture  
 
 ---
