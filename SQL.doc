@@ -1,0 +1,110 @@
+# Figure 3.0: High-Throughput Scalable Data Model & SQL Optimization Engine
+**Portfolio Module: High-Performance Data Lakehouse Calculations**
+**Architecture Archetype: Event-Driven Kappa Stream Architecture**
+
+---
+
+## Section 1: Average Daily Consumption Per Meter
+This query calculates the arithmetic mean consumption of electricity grouped by individual smart meter devices to establish core household baselines.
+
+```sql
+SELECT 
+    meter_id,
+    ROUND(AVG(usage_kwh), 4) AS average_daily_consumption_kwh
+FROM 
+    Readings
+GROUP BY 
+    meter_id
+ORDER BY 
+    average_daily_consumption_kwh DESC;
+```
+
+---
+
+## Section 2: Standard Deviation of Usage Per Meter
+This query measures consumption variance per device, which serves as the underlying statistical calculation used to trigger real-time theft alerts and automated field technician dispatches.
+
+```sql
+SELECT 
+    meter_id,
+    ROUND(STDDEV(usage_kwh), 4) AS consumption_standard_deviation,
+    COUNT(reading_id) AS total_readings_evaluated
+FROM 
+    Readings
+GROUP BY 
+    meter_id
+HAVING 
+    COUNT(reading_id) > 1;
+```
+
+---
+
+## Section 3: Point-in-Time Temporal Join (Historical Pricing Changes)
+This script solves the static tariff trap by completely removing dependencies on any static meter-level tariff foreign keys. Instead, it executes a deterministic dual-range temporal join across the `Meter_Tariff_History` associative table and the `Tariffs` Slowly Changing Dimension (SCD Type 2) windows to pinpoint the exact pricing contract active at the precise millisecond of consumption. It leverages an enterprise high-date fallback ('9999-12-31') to ensure absolute query determinism during financial audits.
+
+```sql
+SELECT 
+    m.hashed_customer_id,
+    r.meter_id,
+    r.reading_date,
+    r.usage_kwh,
+    t.tariff_id,
+    t.price_per_kwh,
+    ROUND(r.usage_kwh * COALESCE(t.price_per_kwh, 0.0000), 4) AS calculated_daily_cost
+FROM 
+    Readings r
+JOIN 
+    Meters m ON r.meter_id = m.meter_id
+-- Step 1: Pinpoint the specific contract plan assigned to this meter on the date of consumption
+JOIN 
+    Meter_Tariff_History mth ON r.meter_id = mth.meter_id 
+    AND r.reading_date >= mth.assigned_date 
+    AND r.reading_date <= COALESCE(mth.removal_date, CAST('9999-12-31' AS DATE))
+-- Step 2: Fetch the exact active rate details for that plan on that same historical date window
+JOIN 
+    Tariffs t ON mth.tariff_id = t.tariff_id
+    AND r.reading_date >= t.effective_start 
+    AND r.reading_date <= COALESCE(t.effective_end, CAST('9999-12-31' AS DATE));
+```
+
+---
+
+## Section 4: Late-Data Arrival Tracking & Incorrectly Billed Invoices
+This advanced analytics query identifies out-of-order telemetry payloads that arrived after invoices were compiled. By evaluating the meter's current plan on the late ingestion date versus its historical plan on the actual consumption date, it calculates pricing deltas. It enforces a strict mathematical audit trail for the Figure 4.0 RECONCILIATION queue by isolating late payloads arriving outside the 24-hour transmission window.
+
+```sql
+SELECT 
+    r.reading_id,
+    r.meter_id,
+    r.reading_date,
+    r.timestamp_received,
+    ROUND(COALESCE(t.price_per_kwh, 0.1500), 4) AS applied_billed_price,
+    ROUND(actual_t.price_per_kwh, 4) AS correct_historical_price,
+    ROUND(COALESCE(t.price_per_kwh, 0.1500) - actual_t.price_per_kwh, 4) AS pricing_delta_error
+FROM 
+    Readings r
+JOIN 
+    Meters m ON r.meter_id = m.meter_id
+-- Track down the temporary tariff plan mapped to the meter on the late date the system processed the payload
+LEFT JOIN 
+    Meter_Tariff_History mth_temp ON r.meter_id = mth_temp.meter_id
+    AND CAST(r.timestamp_received AS DATE) >= mth_temp.assigned_date 
+    AND CAST(r.timestamp_received AS DATE) <= COALESCE(mth_temp.removal_date, CAST('9999-12-31' AS DATE))
+LEFT JOIN 
+    Tariffs t ON mth_temp.tariff_id = t.tariff_id
+    AND CAST(r.timestamp_received AS DATE) >= t.effective_start 
+    AND CAST(r.timestamp_received AS DATE) <= COALESCE(t.effective_end, CAST('9999-12-31' AS DATE))
+-- Locate the true, compliant contract rate that legally applied on the actual date of consumption
+JOIN 
+    Meter_Tariff_History mth_actual ON r.meter_id = mth_actual.meter_id
+    AND r.reading_date >= mth_actual.assigned_date 
+    AND r.reading_date <= COALESCE(mth_actual.removal_date, CAST('9999-12-31' AS DATE))
+JOIN 
+    Tariffs actual_t ON mth_actual.tariff_id = actual_t.tariff_id
+    AND r.reading_date >= actual_t.effective_start 
+    AND r.reading_date <= COALESCE(actual_t.effective_end, CAST('9999-12-31' AS DATE))
+WHERE 
+    COALESCE(t.price_per_kwh, 0.1500) <> actual_t.price_per_kwh
+    AND r.timestamp_received > (r.reading_date + INTERVAL '1 day');
+```' DAY);
+```
