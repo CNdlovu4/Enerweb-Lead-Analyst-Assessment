@@ -22,7 +22,7 @@ ORDER BY
 ---
 
 ## Section 2: Standard Deviation of Usage Per Meter
-This query measures consumption variance per device, which serves as the underlying statistical calculation used to trigger real-time theft alerts and field technician dispatches.
+This query measures consumption variance per device, which serves as the underlying statistical calculation used to trigger real-time theft alerts and automated field technician dispatches.
 
 ```sql
 SELECT 
@@ -40,7 +40,7 @@ HAVING
 ---
 
 ## Section 3: Point-in-Time Temporal Join (Historical Pricing Changes)
-This script satisfies the core requirement to map daily consumption to its exact point-in-time timeline pricing contract row using slowly changing dimension effective date windows.
+This script satisfies the core structural requirement to map daily consumption to its exact point-in-time timeline pricing contract row using slowly changing dimension effective date windows.
 
 ```sql
 SELECT 
@@ -65,7 +65,7 @@ WHERE
 ---
 
 ## Section 4: Late-Data Arrival Tracking & Incorrectly Billed Invoices
-This advanced query flags records where late device transmissions bypassed active contract windows, resulting in an automated delta calculation error flagged for reconciliation.
+This advanced analytics query flags records where late device transmissions bypassed active contract windows, resulting in an automated delta calculation error flagged for reconciliation.
 
 ```sql
 SELECT 
@@ -89,4 +89,6 @@ WHERE
     AND (r.reading_date <= actual_t.effective_end OR actual_t.effective_end IS NULL)
     AND COALESCE(t.price_per_kwh, 0.1500) <> actual_t.price_per_kwh
     AND r.timestamp_received > (r.reading_date + INTERVAL '1' DAY);
+```
+(r.reading_date + INTERVAL '1' DAY);
 ```
