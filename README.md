@@ -1,5 +1,5 @@
 # Figure 1.0: Enterprise Grid Telemetry & Dynamic Tariff Integration Engine
-**Candidate:** Charity Ndlovu |Lead Systems Analyst Technical Assessment Submission  
+**Candidate:** Charity Ndlovu | Lead Systems Analyst Technical Submission  
 **Architecture Archetype:** Event-Driven Kappa Streaming Architecture  
 
 ---
@@ -7,7 +7,7 @@
 ## 💎 Executive Architecture Summary
 This repository contains the complete production-grade system blueprint, data models, and analytical queries designed to handle grid-scale smart meter telemetry ingestion and automated dynamic tariff calculation. 
 
-To eliminate the system crashes and data loss common in legacy platforms, this architecture decouples the high-concurrency ingestion edge from active database lookup locks using a **Kappa Architecture** design pattern [aws_kinesis_data_streams_arch]. All processing, data validation, real-time alert baseline evaluations, and point-in-time financial re-billing tasks run through a single, unified immutable data stream ledger, ensuring absolute temporal data integrity.
+To eliminate the system crashes and data loss common in legacy platforms, the architecture decouples the high-concurrency ingestion edge from active database lookup locks using a **Kappa Architecture** design pattern [aws_kinesis_data_streams_arch]. All processing, data validation, real-time alert baseline evaluations, and point-in-time financial re-billing tasks run through a single, unified immutable data stream ledger, ensuring absolute temporal data integrity.
 
 ---
 
@@ -31,4 +31,4 @@ To eliminate the system crashes and data loss common in legacy platforms, this a
 1.  **Late-Data Alignment Engine:** Implements structural telemetry timestamps rather than ingestion clock stamps, eliminating calculation discrepancies caused by network latency dropouts.
 2.  **Streaming Shock Absorber:** Leverages decoupled ingestion message streams to process heavy concurrent machine workloads cleanly [aws_kinesis_data_streams_arch].
 3.  **Soft-Delete Configuration Invariance:** Enforces an append-only configuration layer with explicit date validity boundaries (`effective_start` / `effective_end`), protecting historical reporting files from schema truncation crashes.
-:** Enforces an append-only configuration layer with explicit date validity boundaries (`effective_start` / `effective_end`), protecting historical reporting files from schema truncation crashes.
+configuration layer with explicit date validity boundaries (`effective_start` / `effective_end`), protecting historical reporting files from schema truncation crashes.
