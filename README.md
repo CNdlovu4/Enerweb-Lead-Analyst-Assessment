@@ -7,7 +7,7 @@ To eliminate the system crashes and data loss common in legacy systems, this arc
 
 ## 📂 Repository Structural Blueprint & File Directory
 
-### 🖼️ /assets (System Blueprint Graphic Artifacts)
+### 🖼️ /models (System Blueprint Graphic Artifacts)
 *   **`SystemsDesign.png` (Figure 1.0):** The macro enterprise architecture map displaying the asynchronous ingestion path through Amazon Kinesis, real-time AWS Lambda anomaly evaluation loops, and the isolated Databricks Medallion data lake zones [aws_kinesis_data_streams_arch]. It highlights the automated Gold Zone lookup loop triggered during `>350%` usage spikes.
 *   **`UseCase.png` (Figure 2.0):** The micro-logic software boundary specification model utilizing strict UML oval elements. Maps automated system `<<include>>` pipelines and conditional `<<extend>>` exception workflows (e.g., automated workforce dispatch hooks).
 *   **`ERD.png` (Figure 3.0):** The 3NF normalized physical database schema. Outlines exact columns, data constraints, foreign key mappings, and high-performance time-series partitioning on the `readings.reading_date` field.
